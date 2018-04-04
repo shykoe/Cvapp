@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import axios from 'axios';
+//import axios from 'axios';
 import imgList from './randomCaptions.json';
 import './bar.css';
 // import 'react-images-uploader/styles.css';
@@ -47,7 +47,7 @@ class ItemPage extends Component{
     var len = imgList['imgList'].length;
     const imgs = [] 
     for(var i =0 ; i<5;i++){
-    	var ind = parseInt(Math.random()* len);
+    	var ind = parseInt(Math.random()* len,10);
     	var img = imgList['imgList'][ind]
     	if (img in imgs){
     		i = i - 1;

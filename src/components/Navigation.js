@@ -23,6 +23,7 @@ componentWillMount(){
   switch(window.location.pathname){
     case '/classify':this.setState({selectedIndex:1});break;
     case '/caption':this.setState({selectedIndex:1});break;
+    case '/sketch':this.setState({selectedIndex:1});break;
     case '/project':this.setState({selectedIndex:1});break;
     case '/team':this.setState({selectedIndex:2});break;
     default : console.log(window.location.pathname);

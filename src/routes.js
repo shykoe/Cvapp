@@ -6,6 +6,7 @@ import ItemPage from './components/item';
 import CaptionPage from './components/caption';
 import TeamPage from './components/team';
 import Background  from '../res/img/advantage-back.jpg';
+import Sketch from './components/sketch';
 const style = {
 	main:{
         display: 'flex',
@@ -97,6 +98,7 @@ const Routes = ()=>(
 		<Route path='/classify' render={()=>(<ItemPage/>)}/>
 		<Route path='/caption' render={()=>(<CaptionPage/>)}/>
 		<Route path='/team' render={()=>(<TeamPage/>)}/>
+		<Route path='/sketch' render={()=>(<Sketch/>)}/>
 	</Switch>
 
 	)
