@@ -4,6 +4,7 @@ import imgList from './randomList.json';
 import './bar.css';
 import './sketch.css';
 import {SketchField, Tools} from 'react-sketch';
+import CanvasDraw from "react-canvas-draw";
 import Slider from 'material-ui/Slider';
 // import 'react-images-uploader/styles.css';
 // import 'react-images-uploader/font.css';
@@ -38,10 +39,11 @@ const style = {
 	'border':'1px solid #c8cccf',
 	'color':'#6a6f77',
 	},
-	subtitle:{
-		'marginBottom':'20px',
-		'fontSize':'1.0em',
-	},
+  subtitle:{
+    'marginBottom':'20px',
+    'fontSize':'1.0em',
+    'width':'400px'
+  },
 	slider:{
 		width:'8em'
 	},
@@ -49,20 +51,58 @@ const style = {
 		marginLeft:'2em',
 	}
 }
+const attributes = ['jungle','longneck','fierce', 'claws','hands','spots','longleg','white',
+'fields','timid','vegetation','stripes','flys','hooves','meat','hunter','horns','fish','group','domestic']
+const matrix = [
+[0,1,0,0,1,0,1,0,0],
+[0,0,0,0,1,0,1,0,1],
+[0,0,1,1,0,0,1,1,0],
+[0,0,0,0,1,0,1,0,0],
+[0,0,1,1,1,1,0,1,0],
+[0,0,0,1,1,1,1,0,0],
+[0,0,0,0,1,0,1,0,0],
+[0,0,0,0,1,0,1,0,0],
+[0,0,0,1,1,0,1,0,0],
+[1,0,0,0,0,0,0,1,0],
+[1,0,0,0,0,0,1,1,0],
+[0,0,0,1,1,0,1,0,0],
+]
+function cosin(attrs){
+  var cos = [];
+  for(var i = 0;i<matrix.length;i++){
+    var vector = matrix[i];
+    var dotvalue = 0;
+    var mo1 = 0;
+    var mo2 = 0;
+    var result = 0;
+    for(var j = 0; j <vector.length;j++){
+      dotvalue += vector[j]*attrs[j];
+      mo1 += vector[j] * vector[j];
+      mo2 += attrs[j] * attrs[j];
+    }
+    result = dotvalue / (Math.sqrt(mo1)* Math.sqrt(mo2) +1e-10);
+    cos.push(result);
 
+  }
+  return cos;
+}
 class Sliderattribute extends Component {
   state = {
     secondSlider: 0,
   };
 
   handleSecondSlider = (event, value) => {
+    const { index, setAttr } = this.props;
     this.setState({secondSlider: value});
+    setAttr(index,value);
+    //console.log(setAttr);
   };
 
   render() {
-  	const { attribute } = this.props;
+    const { attribute,width } = this.props;
+    //console.log(this.props.index)
     return (
-      <div style={style.slider}>
+      <div style={{width:`${width}em`}}>
         <Slider
           min={0}
           max={1}
@@ -71,7 +111,7 @@ class Sliderattribute extends Component {
           onChange={this.handleSecondSlider}
           sliderStyle={{margin: 0}}
         />
-        <p>
+        <p style={{marginTop:0}}>
           <span>{attribute+'  '}</span>
           <span>{this.state.secondSlider}</span>
         </p>
@@ -128,7 +168,20 @@ class ItemPage extends Component{
     super(props);
     const LABELS = ['giraffe', 'cow', 'bat', 'pig', 'tiger', 'zebra', 'elephant',
        'sheep', 'horse', 'whale', 'dolphin', 'monkey']
-    this.state = {file: '',imagePreviewUrl: '', result:null,idx:null, labels:LABELS};
+    this.state = {
+      file: '',
+      imagePreviewUrl: '',
+      result:null,
+      idx:null,
+      labels:LABELS,
+      width:400, 
+      height:400,
+      deviceWidth: document.documentElement.clientWidth,
+      deviceHeight: document.documentElement.clientHeight,
+      sliderWidth:8,
+      attributes:['fish','longneck', 'fierce','fast','fields','stripes','group','meat','hooves'],
+      attValue:[0,0,0,0,0,0,0,0,0],
+    };
   }
   _handleSubmit(e) {
     e.preventDefault();
@@ -195,17 +248,20 @@ class ItemPage extends Component{
     }
     const inputSize = 28;
     const imageSize = 400;
-    var canvasContainerCtx = this._sketch._canvas.getContext('2d');
+    var canvasContainerCtx = this._sketch.ctx;
     var imageData = canvasContainerCtx.getImageData(0,0,400,400);
     imageData = imageData.data;
-    var boxSize = parseInt(400 / 28);
+    var boxSize = parseInt(imageSize / inputSize);
+
     function pixelPos(i, j, k, l) {
       return (imageSize * (i * boxSize + k) + (j * boxSize + l)) * 4;
     }
+
     function calcGreyScale(i, j, k, l) {
       var pos = pixelPos(i, j, k, l);
       return imageData[pos + 3];
     }
+
     var resizedData = new Uint8ClampedArray(inputSize * inputSize * 4);
     var inputForPredict = new Uint8ClampedArray(inputSize * inputSize);
     for(var i=0; i<inputSize; i++) {
@@ -228,15 +284,19 @@ class ItemPage extends Component{
         inputForPredict[i * inputSize + j] = color;
       }
     }
-    //console.log(inputForPredict);
+    //var canvasPreviewCtx = this.preview.getContext('2d');
+    console.log(imageData);
+    //canvasPreviewCtx.putImageData(new ImageData(imageData, 400, 400), 0, 0);
     const url = window.location.host;
+    const attrvec = this.state.attValue;
+    const result = cosin(attrvec);
     var formData  = new FormData();
     formData.append("img", inputForPredict.toString());
     fetch(`http://${url}/api/sketch`,
     {method: 'POST',body: formData }).
     then(res=>res.text()).
     then(data=>{
-      data = data.split(",").map(function(x) { return toPercent(parseFloat(x)) });
+      data = data.split(",").map(function(x,index) { var value = Math.min(parseFloat(x)+ result[index]*0.8,1); return toPercent(parseFloat(value)); });
       var idx = [];
       for(var i=0; i<data.length; i++) idx.push(i);
       idx.sort(function(x, y) {
@@ -250,7 +310,12 @@ class ItemPage extends Component{
   }
   _clear(){
 	this._sketch.clear();
-	this._sketch.setBackgroundFromDataUrl('');
+	//this._sketch.setBackgroundFromDataUrl('');
+  }
+  setAttr(index,value){
+    var attrs = this.state.attValue;
+    attrs[index] = value;
+    this.setState({attValue:attrs});
   }
 	render(){
 	    let {imagePreviewUrl} = this.state;
@@ -263,29 +328,32 @@ class ItemPage extends Component{
 		return(
       <div>
 	      <div style={style.main}>
+
 	      <div>
-            <SketchField width='400px' 
-                         height='400px'
-                         className='canvas-area'
-                         ref={(c) => this._sketch = c}
-                         tool={Tools.Pencil} 
-                         lineColor='black'
-                         lineWidth={10}/>
-          <button className="myButton" 
+
+            <CanvasDraw style={{border: '1px solid #0d3349'}} ref={(c) => this._sketch = c} />
+        <div style={style.subtitle}><span>candidate class</span>: giraffe, cow, bat, pig, tiger, zebra, elephant,
+       sheep, horse, whale, dolphin, monkey</div>
+	      </div>
+	      <div style={style.attribute}>
+{this.state.attributes.map((item, index)=>
+          (<Sliderattribute setAttr={(index,val)=>this.setAttr(index,val)} index={index} key={index} attribute={item} width={this.state.sliderWidth}/>))}
+
+	      </div>
+
+          </div>
+                    <button className="myButton" 
             type="button"
-            	
+              
             onClick={(e)=>this.onClick()}>Submit</button>
           <button className="myButton" 
             type="button"
-            	
+              
             onClick={(e)=>this._clear()}>Clear</button>
-	      </div>
-	      <div style={style.attribute}>
-	      <Sliderattribute attribute={'big'}/>
-	      </div>
-          </div>
+            <div style={{fontSize:'20px'}}>
         {this.state.result&& this.state.idx.map((item, index)=>(<div key={index}>{this.state.labels[item] + '   ' + this.state.result[item]}   </div> ))
           }
+          </div>
       </div>
 		)
 	}

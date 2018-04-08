@@ -31,8 +31,9 @@ const styles = {
     content: {
         flex: 1,
         padding: '2em',
-        display:'flex',
+        display:'block',
         justifyContent: 'center',
+        margin:'0 auto',
     },
     contentSmall: {
         flex: 1,

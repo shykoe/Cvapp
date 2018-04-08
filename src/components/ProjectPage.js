@@ -8,7 +8,7 @@ const style = {
         justifyContent: 'center',
         height: '60%',
         flexWrap: 'wrap',
-        width:'60%',
+        width:'auto',
         alignContent:'center',  alignItems:'center'
 	},
 	    content: {

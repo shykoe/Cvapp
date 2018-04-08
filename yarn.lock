@@ -4575,6 +4575,10 @@ rc@^1.1.7:
     minimist "^1.2.0"
     strip-json-comments "~2.0.1"
 
+react-canvas-draw@^0.1.9:
+  version "0.1.9"
+  resolved "https://registry.yarnpkg.com/react-canvas-draw/-/react-canvas-draw-0.1.9.tgz#88ddf32fb6969ce6e33df0b7cd56b1d6a3aae36f"
+
 react-dev-utils@^0.5.2:
   version "0.5.2"
   resolved "http://registry.npm.taobao.org/react-dev-utils/download/react-dev-utils-0.5.2.tgz#50d0b962d3a94b6c2e8f2011ed6468e4124bc410"
