@@ -6,6 +6,8 @@ import './sketch.css';
 import {SketchField, Tools} from 'react-sketch';
 import CanvasDraw from "react-canvas-draw";
 import Slider from 'material-ui/Slider';
+import Paper from 'material-ui/Paper';
+import RaisedButton from 'material-ui/RaisedButton';
 // import 'react-images-uploader/styles.css';
 // import 'react-images-uploader/font.css';
 const style = {
@@ -49,7 +51,12 @@ const style = {
 	},
 	attribute:{
 		marginLeft:'2em',
-	}
+	},
+  img:{
+    width: 'auto',
+    height: '20em',
+    'maxWidth': '100%',
+  }
 }
 const attributes = ['jungle','longneck','fierce', 'claws','hands','spots','longleg','white',
 'fields','timid','vegetation','stripes','flys','hooves','meat','hunter','horns','fish','group','domestic']
@@ -346,8 +353,9 @@ class ItemPage extends Component{
 	    } else {
 	      $imagePreview = (<div style={style.previewText}> </div>);
 	    }
+      const { styleinner } = this.props;
 		return(
-      <div>
+      <div style={styleinner}>
 	      <div style={style.main}>
 
 	      <div>
@@ -363,6 +371,7 @@ class ItemPage extends Component{
 	      </div>
 
           </div>
+          <div style={{display:'block', textAlign:'center'}}>
                     <button className="myButton" 
             type="button"
               
@@ -371,6 +380,7 @@ class ItemPage extends Component{
             type="button"
               
             onClick={(e)=>this._clear()}>Clear</button>
+          </div>
             <div style={{fontSize:'20px'}}>
         {this.state.result&& this.state.idx.map((item, index)=>(<div key={index}>{this.state.labels[item] + '   ' + this.state.result[item]}   </div> ))
           }
@@ -379,4 +389,36 @@ class ItemPage extends Component{
 		)
 	}
 }
-export default ItemPage
+class MainPage extends Component{
+  constructor(props){
+    super(props);
+    this.state={display:false};
+  }
+  onClick(){
+
+  }
+  render(){
+    return(
+      <div>
+      <ItemPage styleinner={{display: this.state.display? '': 'none'}}/>
+      <Paper style={{display: this.state.display? 'none':'flex', height:'100%', width:'100%', flexDirection:'column'}} zDepth={0} >
+      <div style={{display:'block', padding:'15px 32px', textAlign:'center'}}>
+      <div style={{ maxWidth:'700px', lineHeight:'1.4em',fontSize:'2.4em', fontWeight:'400'}}>
+      Describe And Guess
+      </div>
+      </div>
+      <div style={{marginLeft:'auto', marginRight:'auto'}}>
+      <img  alt={''} style={style.img} src={require('../../res/img/startImg.png')} />
+      </div>
+      <div style={{display:'block', padding:'15px 32px', textAlign:'center'}}>
+      <div style={{fontsize:'0.75em', maxWidth:'700px', lineHeight:'1.4em',fontSize:'1.4em'}}>
+      Draw an animal and choose its attributes
+      </div>
+      <RaisedButton label="Start" style={{marginTop:'1em',fontSize:'20px'}} labelStyle={{textTransform: "none"}} primary={true} onClick={()=>(this.setState({display:true}))}/>
+      </div>
+      </Paper>
+      </div>
+      )
+  }
+}
+export default MainPage
