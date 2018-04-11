@@ -5,10 +5,10 @@ import Paper from 'material-ui/Paper';
 import { Link } from 'react-router-dom';
 //import IconLocationOn from 'material-ui/svg-icons/communication/location-on';
 
-const HomeIcon = <FontIcon className="material-icons" style={{fontSize:'20px'}}>主页</FontIcon>;
-const ProjectsIcon = <FontIcon className="material-icons" style={{fontSize:'20px'}}>项目</FontIcon>;
-const TeamIcon = <FontIcon className="material-icons" style={{fontSize:'20px'}}>团队</FontIcon>;
-const ContractIcon = <FontIcon className="material-icons" style={{fontSize:'20px'}}>联系我们</FontIcon>;
+// const HomeIcon = <FontIcon className="material-icons" style={{fontSize:'20px'}}>主页</FontIcon>;
+// const ProjectsIcon = <FontIcon className="material-icons" style={{fontSize:'20px'}}>项目</FontIcon>;
+// const TeamIcon = <FontIcon className="material-icons" style={{fontSize:'20px'}}>团队</FontIcon>;
+// const ContractIcon = <FontIcon className="material-icons" style={{fontSize:'20px'}}>联系我们</FontIcon>;
 /**
  * A simple example of `BottomNavigation`, with three labels and icons
  * provided. The selected `BottomNavigationItem` is determined by application
@@ -34,35 +34,9 @@ componentWillMount(){
 
   render() {
     return (
-      <Paper zDepth={0}>
+      <Paper zDepth={0} style={{backgroundColor:'rgb(0, 188, 212)',height:'2em',width:'100%',position:'fixed'}}>
 
-        <BottomNavigation selectedIndex={this.state.selectedIndex}>
-        
-          <BottomNavigationItem
-            
-            icon={HomeIcon}
-            onClick={() => this.select(0)}
-            containerElement={<Link style={{textDecoration: 'none'}} to="/"/>}
-          />
-          <BottomNavigationItem
-            icon={ProjectsIcon}
-            onClick={() => this.select(1)}
-            containerElement={<Link style={{textDecoration: 'none'}} to="/project"/>}
-          />
-          <BottomNavigationItem
-            
-            icon={TeamIcon}
-            onClick={() => this.select(2)}
-            containerElement={<Link style={{textDecoration: 'none'}} to="/team"/>}
-          />
-          <BottomNavigationItem
-            
-            icon={ContractIcon}
-            onClick={() => this.select(3)}
-            containerElement={<a style={{textDecoration: 'none'}} href="mailto:xiaoshan.yang@nlpr.ia.ac.cn"/>}
-          />
-          
-        </BottomNavigation>
+ <div style={{fontzFamily:'Roboto, sans-serif',fontSize:'24px',fontWeight:'300',color:'rgb(255,255,255)',paddingLeft:'24px'}}>DESCRIBE AND GUESS</div>
       </Paper>
     );
   }

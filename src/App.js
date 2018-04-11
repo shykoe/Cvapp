@@ -30,7 +30,7 @@ const styles = {
     },
     content: {
         flex: 1,
-        padding: '2em',
+        padding: '3em',
         display:'block',
         justifyContent: 'center',
         margin:'0 auto',

@@ -261,9 +261,9 @@ class ItemPage extends Component{
       var pos = pixelPos(i, j, k, l);
       return imageData[pos + 3];
     }
-
     var resizedData = new Uint8ClampedArray(inputSize * inputSize * 4);
     var inputForPredict = new Uint8ClampedArray(inputSize * inputSize);
+    var flag = 0
     for(var i=0; i<inputSize; i++) {
       for(var j=0; j<inputSize; j++) {
         var color = 0;
@@ -274,6 +274,7 @@ class ItemPage extends Component{
         }
         color = parseInt(color / (boxSize * boxSize));
         if (color > 64) color = 255;
+        flag += color;
         // color = Math.random() * 256;
         var resizedDataPos = (i * inputSize + j) * 4;
         resizedData[resizedDataPos] = 
@@ -292,24 +293,44 @@ class ItemPage extends Component{
     const result = cosin(attrvec);
     var formData  = new FormData();
     formData.append("img", inputForPredict.toString());
-    fetch(`http://${url}/api/sketch`,
-    {method: 'POST',body: formData }).
-    then(res=>res.text()).
-    then(data=>{
-      data = data.split(",").map(function(x,index) { var value = Math.min(parseFloat(x)+ result[index]*0.8,1); return toPercent(parseFloat(value)); });
+    var flag_attr = 0; 
+    for(var i = 0; i < result.length; i++){
+      flag_attr += result[i];
+    }
+    if(flag > 0){
+      fetch(`http://${url}/api/sketch`,
+      {method: 'POST',body: formData }).
+      then(res=>res.text()).
+      then(data=>{
+        console.log(data);
+        data = data.split(",").map(function(x,index) { var value = Math.min(parseFloat(x)+ result[index]*0.8,1); return toPercent(parseFloat(value)); });
+        var idx = [];
+        for(var i=0; i<data.length; i++) idx.push(i);
+        idx.sort(function(x, y) {
+          if(data[x] < data[y]) return -1;
+          else if(data[x] > data[y]) return 1;
+          return 0;
+        }).reverse();
+        this.setState({result:data,idx:idx})
+      })
+    console.log(this.state)
+    }
+    else if (flag_attr>0){
+      console.log(result);
+      var results = result.map((x=>(toPercent(parseFloat(x)))))
       var idx = [];
-      for(var i=0; i<data.length; i++) idx.push(i);
+      for(var i=0; i<results.length; i++) idx.push(i);
       idx.sort(function(x, y) {
-        if(data[x] < data[y]) return -1;
-        else if(data[x] > data[y]) return 1;
+        if(results[x] < results[y]) return -1;
+        else if(results[x] > results[y]) return 1;
         return 0;
       }).reverse();
-      this.setState({result:data,idx:idx})
-    })
-    console.log(this.state)
+    this.setState({result:results,idx:idx})
+    }
   }
   _clear(){
 	this._sketch.clear();
+  this.setState({result:null,idx:null});
 	//this._sketch.setBackgroundFromDataUrl('');
   }
   setAttr(index,value){
